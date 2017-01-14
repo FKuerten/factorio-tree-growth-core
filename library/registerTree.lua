@@ -22,7 +22,7 @@ end
 
 local function getNode(...)
   local t = tree_growth.trees
-  local f = function(t, k, ...)
+  local function f(t, k, ...)
     if k then
       if not t[k] then t[k] = {} end
       return f(t[k], ...)
