@@ -67,15 +67,15 @@ tree_growth.core.registerUpgrade = function(base, upgrade, probability, minDelay
   persist(upgradeName, upgradeData)
 
   if next(getNode(baseName, "previous")) then
-    baseEntity.subgroup = tree_growth.groups.intermediate
+    baseEntity.subgroup = tree_growth.core.groups.intermediate
   else
-    baseEntity.subgroup = tree_growth.groups.sapling
+    baseEntity.subgroup = tree_growth.core.groups.sapling
   end
 
   if next(getNode(upgradeName, "upgrades")) then
-    upgradeEntity.subgroup = tree_growth.groups.intermediate
+    upgradeEntity.subgroup = tree_growth.core.groups.intermediate
   else
-    upgradeEntity.subgroup = tree_growth.groups.mature
+    upgradeEntity.subgroup = tree_growth.core.groups.mature
   end
 end
 
