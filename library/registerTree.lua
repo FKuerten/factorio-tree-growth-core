@@ -2,8 +2,9 @@ tree_growth = tree_growth or {}
 tree_growth.core = tree_growth.core or {}
 require "library/constants"
 
+local treeData = {}
 local function persist(treeName)
-  data.raw.tree[treeName].order = serpent.dump(tree_growth.tree[treeName])
+  data.raw.tree[treeName].order = serpent.dump(treeData[treeName])
 end
 
 local function resolveEntity(label, object)
@@ -21,7 +22,7 @@ local function resolveEntity(label, object)
 end
 
 local function getNode(...)
-  local t = tree_growth.trees
+  local t = treeData
   local function f(t, k, ...)
     if k then
       if not t[k] then t[k] = {} end
