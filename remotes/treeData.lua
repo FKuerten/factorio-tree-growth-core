@@ -22,6 +22,6 @@ end
 remotes.getTreeData = function(treeName)
   local prototype = game.entity_prototypes[treeName]
   local order = prototype.order
-  local nextData = loadstring(order)()
-  return nextData
+  local data = loadstring(order)()
+  return data
 end
