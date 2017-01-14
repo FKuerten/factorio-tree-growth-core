@@ -16,8 +16,8 @@ local function resolveEntity(label, object)
     assert (object.name, label .. " is not a valid entity")
     name = object.name
   end
-  entity = data.raw.tree[baseName]
-  assert (entity, label .. " entity is not registered")
+  entity = data.raw.tree[name]
+  assert (entity, label .. " entity ".. name .. " is not registered")
   return name, entity
 end
 
