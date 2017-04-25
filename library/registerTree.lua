@@ -4,6 +4,7 @@ require "library/constants"
 
 local treeData = {}
 local function persist(treeName)
+  assert(treeName, "need a name to persist")
   data.raw.tree[treeName].order = serpent.dump(treeData[treeName])
 end
 
