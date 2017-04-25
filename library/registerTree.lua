@@ -83,9 +83,10 @@ end
 
 tree_growth.core.registerOffspring = function(tree, sapling)
   local treeName, treeEntity = resolveEntity("tree", tree)
-  local saplingName, saplingName = resolveEntity("sapling", sapling)
+  local saplingName, saplingEntity = resolveEntity("sapling", sapling)
 
-  table.insert(getNode(treeName, "saplings"), saplingName)
+  assert(type(getNode(treeName).sapling) == 'nil')
+  getNode(treeName).sapling = saplingName
   persist(treeName)
   table.insert(getNode(saplingName, "parents"), treeName)
   persist(saplingName)
