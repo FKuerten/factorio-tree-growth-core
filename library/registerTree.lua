@@ -22,8 +22,56 @@ local function resolveEntity(label, object)
   return name, entity
 end
 
+local function resolveNumber(label, number)
+  if type(number) ~= "number" then
+    error(label .. " is not a number: " .. tostring(number))
+  end
+  return number
+end
+
+local function resolveProbability(label, number)
+  resolveNumber(label, number)
+  if 0 < number or number > 1 then
+    error(label .. " is not a probability: " .. tostring(number))
+  end
+  return number
+end
+
+local function resolveTileFilter(label, tiles)
+  if type(tiles) == 'nil' then
+    return nil
+  elseif type(tiles) ~= 'table' then
+    error(label .. " is neither nil nor a table: " .. type(tiles))
+  else
+    local result = {}
+    for k,v in pairs(tiles) do
+      if type(k) ~= 'string' then
+        error(label .. " key " .. tostring(k) .. " is not a string")
+      end
+      result[k] = v and true or false
+    end
+    return result
+  end
+end
+
+local function resolveVariations(label, variations)
+  if (variations == "id") or (variations == "random") then
+    return variations
+  elseif type(variations) == 'table' then
+    local result = {}
+    for k,v in pairs(variations) do
+      assert(type(k) == 'number', label .. " key " .. tostring(k) .. " is not a number")
+      if (v == 'random') or type(v) == 'number' then
+        result[k] = v
+      else
+        error(label .. " value " .. tostring(v) .. " is not supported")
+      end
+    end
+    return result 
+  end
+end
+
 local function getNode(...)
-  local t = treeData
   local function f(t, k, ...)
     if k then
       if not t[k] then t[k] = {} end
@@ -32,42 +80,48 @@ local function getNode(...)
       return t
     end
   end
-  return f(t, ...)
+  return f(treeData, ...)
 end
 
---- Registers a single tree as relevant.
--- If more than one upgrade exist for a tree a random tree will be chosen. The probabilities will be used as weights.
---
--- @param base the name of the base tree or the entity
--- @param upgrade the name of upgrade tree or the entity
--- @param probability the probability that this upgrade will be chosen
--- @param minDelay the minimum time until the upgrade will be applied if its chosen
--- @param minDelay the maximum time until the upgrade will be applied if its chosen
-tree_growth.core.registerUpgrade = function(base, upgrade, probability, minDelay, maxDelay)
-  local baseName, baseEntity = resolveEntity("base", base)
-  local upgradeName, upgradeEntity = resolveEntity("upgrade", upgrade)
-  assert(probability, "probability missing")
-  assert(type(probability) == "number" and probability > 0, "probability is not a positive number")
-  assert(minDelay, "delay missing")
-  if not maxDelay then
-    assert(type(minDelay) == "number" and minDelay > 0, "delay is not a positive number")
-    maxDelay = minDelay
-  else
-    assert(type(minDelay) == "number" and minDelay > 0, "minDelay is not a positive number")
-    assert(type(maxDelay) == "number" and maxDelay > 0, "minDelay is not a positive number")
-  end
-
-  table.insert(getNode(baseName, "upgrades"), {
+-- @param upgradeSpec
+--     base the name of the base tree or the entity
+--     upgrade the name of upgrade tree or the entity
+--     probability the probability that this upgrade will be chosen, between 0 and 1
+--     minDelay the minimum time until the upgrade will be applied if its chosen
+--     minDelay the maximum time until the upgrade will be applied if its chosen
+--     tiles either nil or true to allow all tiles,
+--         or a dictionary from tile name to boolean allowing those tiles that are true
+--     variations either the string "id" for identity (only works if both have the same number of variations)
+--         or the string "random" for random variation
+--         or a dictionary from int to either int (use that variation) or the string "random" (for a random variation)
+-- 
+function tree_growth.core.registerUpgrade(upgradeSpec)
+  local baseName, baseEntity = resolveEntity("base", upgradeSpec.base)
+  local upgradeName, upgradeEntity = resolveEntity("upgrade", upgradeSpec.upgrade) 
+  
+  local data = {
     name = upgradeName,
-    probability = probability,
-    minDelay = minDelay,
-    maxDelay = maxDelay,
-  })
+    probability = resolveProbability("probability", upgradeSpec.probability or 1),
+    minDelay = resolveNumber("minDelay", upgradeSpec.minDelay),
+    maxDelay = resolveNumber("maxDelay", upgradeSpec.maxDelay),
+    tiles = resolveTileFilter("tiles", upgradeSpec.tiles),
+    varations = resolveVariations("variations", upgradeSpec.varations),
+  }
+  if data.minDelay < 0 then
+    error("minDelay must not be negative")
+  end
+  if data.minDelay > data.maxDelay then
+    error("minDelay must not be larger than maxDelay")
+  end
+  
+  -- store and persist
+  table.insert(getNode(baseName, "upgrades"), data)
   persist(baseName)
 
   table.insert(getNode(upgradeName, "previous"), baseName)
-  persist(upgradeName, upgradeData)
+  persist(upgradeName)
 
+  -- TODO do we need this?
   if next(getNode(baseName, "previous")) then
     baseEntity.subgroup = tree_growth.core.groups.intermediate
   else
@@ -81,13 +135,22 @@ tree_growth.core.registerUpgrade = function(base, upgrade, probability, minDelay
   end
 end
 
-tree_growth.core.registerOffspring = function(tree, sapling)
-  local treeName, treeEntity = resolveEntity("tree", tree)
-  local saplingName, saplingEntity = resolveEntity("sapling", sapling)
 
-  assert(type(getNode(treeName).sapling) == 'nil')
-  getNode(treeName).sapling = saplingName
+-- TODO rewrite to new form
+tree_growth.core.registerOffspring = function(offspringSpec)
+  local treeName, treeEntity = resolveEntity("parent", offspringSpec.parent)
+  local saplingName, saplingEntity = resolveEntity("sapling", offspringSpec.sapling)
+  
+  local data = {
+    name = saplingName,
+    probability = resolveProbability("probability", offspringSpec.probability or 1),
+    tiles = resolveTileFilter("tiles", offspringSpec.tiles),
+    varations = resolveVariations("variations", offspringSpec.varations),
+  }
+
+  table.insert(getNode(treeName, "saplings"), data)
   persist(treeName)
+  
   table.insert(getNode(saplingName, "parents"), treeName)
   persist(saplingName)
 end
