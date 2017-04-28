@@ -7,6 +7,7 @@ data:extend({
     order = "e",
     inventory_order = "e",
     icon = "__base__/graphics/icons/tree-05.png",
+    icon_size = 32,
   },
   {
     type = "item-subgroup",
