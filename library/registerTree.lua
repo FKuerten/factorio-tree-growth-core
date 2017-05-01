@@ -107,7 +107,7 @@ function tree_growth.core.registerUpgrade(upgradeSpec)
     minDelay = resolveNumber("minDelay", upgradeSpec.minDelay),
     maxDelay = resolveNumber("maxDelay", upgradeSpec.maxDelay),
     tiles = resolveTileFilter("tiles", upgradeSpec.tiles),
-    varations = resolveVariations("variations", upgradeSpec.varations),
+    variations = resolveVariations("variations", upgradeSpec.variations),
   }
   if data.minDelay < 0 then
     error("minDelay must not be negative")
@@ -147,7 +147,7 @@ tree_growth.core.registerOffspring = function(offspringSpec)
     name = saplingName,
     probability = resolveProbability("probability", offspringSpec.probability or 1),
     tiles = resolveTileFilter("tiles", offspringSpec.tiles),
-    varations = resolveVariations("variations", offspringSpec.varations),
+    variations = resolveVariations("variations", offspringSpec.variations),
   }
 
   table.insert(getNode(treeName, "saplings"), data)
