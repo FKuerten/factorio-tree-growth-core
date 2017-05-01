@@ -55,7 +55,9 @@ local function resolveTileFilter(label, tiles)
 end
 
 local function resolveVariations(label, variations)
-  if (variations == "id") or (variations == "random") then
+  if type(variations) == 'nil' then
+    error(label .. " must not be nil")
+  elseif (variations == "id") or (variations == "random") then
     return variations
   elseif type(variations) == 'table' then
     local result = {}
