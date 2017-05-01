@@ -31,7 +31,7 @@ end
 
 local function resolveProbability(label, number)
   resolveNumber(label, number)
-  if 0 < number or number > 1 then
+  if number < 0 then
     error(label .. " is not a probability: " .. tostring(number))
   end
   return number
