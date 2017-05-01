@@ -137,8 +137,13 @@ function tree_growth.core.registerUpgrade(upgradeSpec)
   end
 end
 
-
--- TODO rewrite to new form
+--
+-- @param offspringSpec
+--   parent
+--   sapling
+--   probability
+--   tiles
+--   variations
 tree_growth.core.registerOffspring = function(offspringSpec)
   local treeName, treeEntity = resolveEntity("parent", offspringSpec.parent)
   local saplingName, saplingEntity = resolveEntity("sapling", offspringSpec.sapling)
