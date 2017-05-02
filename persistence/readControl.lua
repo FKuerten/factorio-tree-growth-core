@@ -1,7 +1,8 @@
 function getTreeData(treeName)
-  local prototype = game.entity_prototypes[treeName]
-  if not prototype then return nil end
-  local order = prototype.order
+  local textName = 'tree-growth-core-' .. treeName
+  local textPrototype = game.entity_prototypes[textName]  
+  if not textPrototype then return nil end
+  local order = textPrototype.order
   if not order then return nil end
   local dataFunc = loadstring(order)
   if not dataFunc then return nil end
