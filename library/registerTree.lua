@@ -1,11 +1,12 @@
 tree_growth = tree_growth or {}
 tree_growth.core = tree_growth.core or {}
 require "library/constants"
+require "persistence/writeData"
 
 local treeData = {}
 local function persist(treeName)
   assert(treeName, "need a name to persist")
-  data.raw.tree[treeName].order = serpent.dump(treeData[treeName])
+  tree_growth.core.persist(treeName, treeData[treeName])
 end
 
 local function resolveEntity(label, object)

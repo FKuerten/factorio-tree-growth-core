@@ -1,4 +1,5 @@
 require "library/constants"
+require "persistence/readControl"
 
 local pickRandomTree = function(nextTrees)
   local sum = 0
@@ -19,14 +20,4 @@ local pickRandomTree = function(nextTrees)
   return lastEntry
 end
 
-remotes.getTreeData = function(treeName)
-  local prototype = game.entity_prototypes[treeName]
-  if not prototype then return nil end
-  local order = prototype.order
-  if not order then return nil end
-  local dataFunc = loadstring(order)
-  if not dataFunc then return nil end
-  --assert(dataFunc, "no data for " .. treeName .. " order=" .. order)
-  local data = dataFunc()
-  return data
-end
+remotes.getTreeData = getTreeData
