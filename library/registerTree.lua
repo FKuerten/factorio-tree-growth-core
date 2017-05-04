@@ -144,7 +144,6 @@ end
 --   sapling
 --   probability
 --   tiles
---   variations
 tree_growth.core.registerOffspring = function(offspringSpec)
   local treeName, treeEntity = resolveEntity("parent", offspringSpec.parent)
   local saplingName, saplingEntity = resolveEntity("sapling", offspringSpec.sapling)
@@ -153,7 +152,6 @@ tree_growth.core.registerOffspring = function(offspringSpec)
     name = saplingName,
     probability = resolveProbability("probability", offspringSpec.probability or 1),
     tiles = resolveTileFilter("tiles", offspringSpec.tiles),
-    variations = resolveVariations("variations", offspringSpec.variations),
   }
 
   table.insert(getNode(treeName, "saplings"), data)
