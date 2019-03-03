@@ -1,12 +1,12 @@
 {
   "name": "tree-growth-core",
-  "version": "2.1.0",
-  "factorio_version": "0.16",
+  "version": "2.2.0",
+  "factorio_version": "0.17",
   "title": "Tree Growth: Core",
   "author": "Graveeater",
   "contact": "Graveeater on steam",
   "description": "Central functionality for the tree growth mods.",
   "dependencies":
-    [ "base >= 0.16.20"
+    [ "base >= 0.17.4"
     ]
 }
